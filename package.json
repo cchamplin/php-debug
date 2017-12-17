@@ -4,12 +4,25 @@
   "version": "0.2.6",
   "description": "A package for the Atom Text Editor for debugging PHP code using the XDebug extension",
   "repository": "https://github.com/gwomacks/php-debug",
+  "bugs": {
+    "url" :"https://github.com/gwomacks/php-debug/issues"
+  },
   "license": "MIT",
   "engines": {
-    "atom": ">=0.174.0 <2.0.0"
+    "atom": ">=1.17.0 <2.0.0"
   },
+  "keywords" : [
+    "php",
+    "phpdebug",
+    "php-debug",
+    "debugging",
+    "debugger",
+    "debug",
+    "xdebug"
+  ],
   "dependencies": {
     "atom-space-pen-views": "^2.0.3",
+    "etch": "^0.12.6",
     "event-kit": "^1.0.3",
     "interact.js": "^1.2.5",
     "multimatch": "^2.1.0",
@@ -20,6 +33,11 @@
     "status-bar": {
       "versions": {
         "^1.0.0": "consumeStatusBar"
+      }
+    },
+    "datatip": {
+      "versions": {
+        "0.1.0": "consumeDatatip"
       }
     }
   }

@@ -1,4 +1,4 @@
-helpers = require '../helpers.coffee'
+{serializeArray,deserializeArray, insertOrdered,arrayRemove} = require '../helpers'
 {Emitter, Disposable} = require 'event-kit'
 
 module.exports =
@@ -20,28 +20,28 @@ class GlobalContext
     deserializer: 'GlobalContext'
     data: {
       version: @constructor.version
-      breakpoints: helpers.serializeArray(@getBreakpoints())
-      watchpoints: helpers.serializeArray(@getWatchpoints())
+      breakpoints: serializeArray(@getBreakpoints())
+      watchpoints: serializeArray(@getWatchpoints())
     }
   }
 
   @deserialize: ({data}) ->
     context = new GlobalContext()
-    breakpoints = helpers.deserializeArray(data.breakpoints)
+    breakpoints = deserializeArray(data.breakpoints)
     context.setBreakpoints(breakpoints)
-    watchpoints = helpers.deserializeArray(data.watchpoints)
+    watchpoints = deserializeArray(data.watchpoints)
     context.setWatchpoints(watchpoints)
     return context
 
   addBreakpoint: (breakpoint) ->
-    helpers.insertOrdered  @breakpoints, breakpoint
+    insertOrdered  @breakpoints, breakpoint
     data = {
       added: [breakpoint]
     }
     @notifyBreakpointsChange(data)
 
   removeBreakpoint: (breakpoint) ->
-    removed = helpers.arrayRemove(@breakpoints, breakpoint)
+    removed = arrayRemove(@breakpoints, breakpoint)
     if removed
       data = {
         removed: [removed]
@@ -66,7 +66,7 @@ class GlobalContext
     @notifyWatchpointsChange()
 
   removeWatchpoint: (watchpoint) ->
-    removed = helpers.arrayRemove(@watchpoints, watchpoint)
+    removed = arrayRemove(@watchpoints, watchpoint)
     if removed
       data = {
         removed: [removed]
@@ -84,7 +84,7 @@ class GlobalContext
     return @debugContexts[0]
 
   addWatchpoint: (watchpoint) ->
-    helpers.insertOrdered  @watchpoints, watchpoint
+    insertOrdered  @watchpoints, watchpoint
     @notifyWatchpointsChange()
 
   getWatchpoints: ->

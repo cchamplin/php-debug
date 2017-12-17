@@ -185,7 +185,6 @@ module.exports = PhpDebug =
       @toggleDebugging(false)
 
     @GlobalContext.onSessionEnd () =>
-      @getUnifiedView().setConnected(false)
       if @currentCodePointDecoration
         @currentCodePointDecoration.destroy?()
 
@@ -260,9 +259,7 @@ module.exports = PhpDebug =
               return true
           return false
       }]
-
-    @GlobalContext.onSessionStart () =>
-      @getUnifiedView().setConnected(true)
+    @getUnifiedView()
 
   consumeStatusBar: (statusBar) ->
     atom.config.observe "php-debug.EnableStatusbarButtons", (enable) =>
@@ -278,8 +275,8 @@ module.exports = PhpDebug =
 
   getUnifiedView: ->
     unless @unifiedView
-      PhpDebugUnifiedView = require './unified/php-debug-unified-view'
-      @unifiedView = new PhpDebugUnifiedView(context: @GlobalContext)
+      {PanelManager} = require './unified/php-debug-unified-view'
+      @unifiedView = new PanelManager(uri: PhpDebugUnifiedUri, context: @GlobalContext)
 
     return @unifiedView
 
@@ -294,18 +291,55 @@ module.exports = PhpDebug =
     @GlobalContext.serialize()
 
   deactivate: ->
-    @unifiedView?.setConnected(false)
     @debugView?.destroy?()
     @debugView = null
     @consoleStatusView?.destroy?()
     @consoleStatusView = null
-    @unifiedView?.destroy?()
+    #@unifiedView?.destroy?()
     @consoleView?.destroy?()
     @subscriptions.dispose()
     @dbgp?.close()
 
   updateDebugContext: (data) ->
     @contextView.setDebugContext(data)
+
+  getGrammarScopes: () ->
+     return [ 'text.html.php' ]
+
+  consumeDatatip: (service) ->
+    provider =
+      providerName: "PHPDebugLanguageClient"
+      priority: 12
+      grammarScopes: @getGrammarScopes()
+      validForScope: (scopeName) =>
+        return getGrammarScopes().includes(scopeName)
+      datatip: @getDatatip.bind(this)
+    service.addProvider(provider)
+
+  getDatatip: (editor, point) ->
+    return new Promise (resolve,reject) =>
+      atom.packages.getActivePackage("ide-php")?.mainModule.getDatatip(editor,point).then (result) =>
+          editor = atom.workspace.getActivePaneItem()
+          if !editor || !editor.getTextInBufferRange || !result
+            resolve(result)
+          else
+            highlight = editor.getTextInBufferRange(result.range)
+            if !@GlobalContext.getCurrentDebugContext() || !highlight
+              resolve(result)
+            else
+              p = @GlobalContext.getCurrentDebugContext()?.evalExpressionPromise(highlight)
+              p.then (data) =>
+                markedString =
+                  grammar: editor.getGrammar()
+                  type: "snippet"
+                  value: "\"" + data + "\""
+                if result.markedStrings
+                  result.markedStrings.push(markedString)
+                console.log(result)
+                console.log(data)
+                resolve(result)
+      .catch (error) ->
+        reject(error)
 
   doCodePoint: (point) ->
       filepath = point.getPath()
@@ -425,6 +459,8 @@ module.exports = PhpDebug =
     if !@getUnifiedView().isVisible() && (allowOpen == undefined || allowOpen == true)
       @getUnifiedView().setVisible(true)
       @debugView?.setActive(true)
+
+
       if !@dbgp.listening()
         @dbgp.setAddressPort(atom.config.get('php-debug.ServerAddress'),atom.config.get('php-debug.ServerPort'))
         if !@dbgp.listen()

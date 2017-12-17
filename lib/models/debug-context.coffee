@@ -1,4 +1,4 @@
-helpers = require '../helpers.coffee'
+{getInsertIndex} = require '../helpers'
 
 module.exports =
 
@@ -16,7 +16,7 @@ class DebugContext
     @scopeList[scopeId].context = context
 
   addWatchpoint: (watchpoint) ->
-    index = helpers.getInsertIndex(@watchpointList, watchpoint)
+    index = getInsertIndex(@watchpointList, watchpoint)
     @watchpointList.push(watchpoint)
 
   clearWatchpoints: () ->
@@ -36,6 +36,5 @@ class DebugContext
 
   getScopes: ->
     return @scopeList
-    
+
   stop: ->
-    

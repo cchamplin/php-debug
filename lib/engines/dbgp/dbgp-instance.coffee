@@ -1,7 +1,7 @@
 parseString = require('xml2js').parseString
 Q = require 'q'
 {Emitter, Disposable} = require 'event-kit'
-helpers = require '../../helpers.coffee'
+{escapeValue,localPathToRemote} = require '../../helpers'
 
 DebugContext = require '../../models/debug-context'
 Watchpoint = require '../../models/watchpoint'
@@ -100,7 +100,7 @@ class DbgpInstance extends DebugContext
 
     payload = command + " -i " + transactionId
     if options && Object.keys(options).length > 0
-      argu = ("-"+(arg) + " " + helpers.escapeValue(val) for arg, val of options)
+      argu = ("-"+(arg) + " " + escapeValue(val) for arg, val of options)
       #argu = ("-"+(arg) + " " + encodeURI(val) for arg, val of options)
       argu2 = argu.join(" ")
       payload += " " + argu2
@@ -168,7 +168,7 @@ class DbgpInstance extends DebugContext
     switch breakpoint.getType()
       when Breakpoint.TYPE_LINE
         path = breakpoint.getPath()
-        path = helpers.localPathToRemote(path)
+        path = localPathToRemote(path)
         options = {
           t: 'line'
           f: encodeURI('file://' + path)
@@ -215,7 +215,7 @@ class DbgpInstance extends DebugContext
 
   executeBreakpointRemove: (breakpoint) =>
     path = breakpoint.getPath()
-    path = helpers.localPathToRemote(path)
+    path = localPathToRemote(path)
     options = {
       d: @breakpointMap[breakpoint.getId()]
     }
