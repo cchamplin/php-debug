@@ -2,7 +2,7 @@
 module.exports =
 class PhpDebugDebugView extends View
   @content: ->
-    @div click: 'toggleDebugging', class: 'php-debug-debug-view', =>
+    @div click: 'toggleDebugging', class: 'php-debug-debug-view-toggle', =>
       @span class: 'icon icon-bug'
       @text('PHP Debug')
 
@@ -16,9 +16,9 @@ class PhpDebugDebugView extends View
 
   setActive: (active) ->
     if active
-      @element.className = 'php-debug-debug-view active'
+      @element.className = 'php-debug-debug-view-toggle active'
     else
-      @element.className = 'php-debug-debug-view'
+      @element.className = 'php-debug-debug-view-toggle'
 
   destroy: ->
     @tile?.destroy?()

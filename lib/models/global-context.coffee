@@ -49,6 +49,10 @@ class GlobalContext
       @notifyBreakpointsChange(data)
       return removed
 
+  updateBreakpoint: (breakpoint) ->
+    @remoteBreakpoint(breakpoint)
+    @addBreakpoint(breakpoint)
+
   setBreakpoints: (breakpoints) ->
     removed = @breakpoints
     @breakpoints = breakpoints
@@ -92,6 +96,7 @@ class GlobalContext
 
   addConsoleMessage: (message) ->
     @consoleMessages.push message
+    @notifyConsoleMessage(message)
 
   getConsoleMessages: (idx) ->
     result =
@@ -99,8 +104,15 @@ class GlobalContext
       total: @consoleMessages.length
     return result
 
+  nextConsoleCommand: () ->
+    @notifyNextConsoleCommand();
+    
+  previousConsoleCommand: () ->
+    @notifyPreviousConsoleCommand();
+
   clearConsoleMessages: ->
     @consoleMessages = []
+    @notifyConsoleMessagesCleared()
 
   setContext: (context) ->
     @context = context
@@ -110,12 +122,29 @@ class GlobalContext
 
   clearContext: ->
 
+  onPreviousConsoleCommand: (callback) ->
+    @emitter.on 'php-debug.previousConsoleCommand', callback
+
+  notifyPreviousConsoleCommand: () ->
+    @emitter.emit 'php-debug.previousConsoleCommand'
+
+  onNextConsoleCommand: (callback) ->
+    @emitter.on 'php-debug.nextConsoleCommand', callback
+
+  notifyNextConsoleCommand: () ->
+    @emitter.emit 'php-debug.nextConsoleCommand'
+
   onConsoleMessage: (callback) ->
     @emitter.on 'php-debug.consoleMessage', callback
 
   notifyConsoleMessage: (data) ->
-    @addConsoleMessage(data)
     @emitter.emit 'php-debug.consoleMessage', data
+
+  onConsoleMessagesCleared: (callback) ->
+    @emitter.on 'php-debug.consoleMessagesCleared', callback
+
+  notifyConsoleMessagesCleared: (data) ->
+    @emitter.emit 'php-debug.consoleMessagesCleared', data
 
   onBreakpointsChange: (callback) ->
     @emitter.on 'php-debug.breakpointsChange', callback

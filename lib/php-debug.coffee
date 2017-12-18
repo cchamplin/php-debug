@@ -260,6 +260,7 @@ module.exports = PhpDebug =
           return false
       }]
     @getUnifiedView()
+    @getConsoleView()
 
   consumeStatusBar: (statusBar) ->
     atom.config.observe "php-debug.EnableStatusbarButtons", (enable) =>
@@ -282,8 +283,8 @@ module.exports = PhpDebug =
 
   getConsoleView: ->
     unless @consoleView
-      PhpDebugConsoleView = require './console/php-debug-console-view'
-      @consoleView = new PhpDebugConsoleView(context: @GlobalContext)
+      {PanelManager} = require './console/php-debug-console-view'
+      @consoleView = new PanelManager(uri: PhpDebugConsoleUri, context: @GlobalContext)
 
     return @consoleView
 
@@ -535,7 +536,7 @@ module.exports = PhpDebug =
       @GlobalContext.addBreakpoint breakpoint
 
   navigatePreviousConsoleCommand: ->
-    @consoleView.prevCommand()
+    @GlobalContext.previousConsoleCommand()
 
   navigateNextConsoleCommand: ->
-    @consoleView.nextCommand()
+    @GlobalContext.nextConsoleCommand()

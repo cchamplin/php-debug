@@ -61,6 +61,13 @@ class Breakpoint extends Codepoint
       return []
     return @settings[type]
 
+  setSettingsValues: (type,values) ->
+    if !@settings
+      @settings = {}
+    @settings[type] = []
+    for value,idx in values
+      @addSetting(type,value)
+
   addSetting: (type,value) ->
     if !@settings
       @settings = {}

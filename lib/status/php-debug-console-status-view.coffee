@@ -2,7 +2,7 @@
 module.exports =
 class PhpDebugConsoleStatusView extends View
   @content: ->
-    @div click: 'toggleConsole', class: 'php-debug-console-view', =>
+    @div click: 'toggleConsole', class: 'php-debug-console-view-toggle', =>
       @span class: 'icon icon-terminal'
       @text('PHP Console')
 
@@ -16,9 +16,9 @@ class PhpDebugConsoleStatusView extends View
 
   setActive: (active) ->
     if active
-      @element.className = 'php-debug-console-view active'
+      @element.className = 'php-debug-console-view-toggle active'
     else
-      @element.className = 'php-debug-console-view'
+      @element.className = 'php-debug-console-view-toggle'
 
   destroy: ->
     @tile?.destroy?()
