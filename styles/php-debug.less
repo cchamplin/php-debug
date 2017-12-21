@@ -5,6 +5,28 @@
 @import "ui-variables";
 @import (inline) "../iconsets/materialdesignicons.css";
 
+.php-debug-action-bar-modal.modal {
+  width: auto;
+  border-color: #929292;
+  border-style:solid;
+  border-radius: 0.325rem;
+  padding: 0;
+  border-width:2px;
+  top: 6%;
+}
+
+.php-debug-action-bar-overlay {
+  padding: 0.65rem;
+  .mini {
+    .php-debug-view-buttons {
+      display: none;
+    }
+    .btn-text {
+      display: none;
+    }
+  }
+}
+
 .right,
 .left {
   .php-debug {
@@ -44,11 +66,13 @@
   }
   .syntax--variable:after {
     content: "=";
-    padding-left: 8px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
   }
   .syntax--property:after {
     content: ":";
-    padding-left: 8px;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
   }
   .php-debug-tab
   {
@@ -83,10 +107,6 @@
 
   ul {
     padding-left: 15px;
-  }
-  .php-debug-watchpoints .type,
-  .context-variable-list-view .type {
-    padding-left: 1em;
   }
 
 }
@@ -235,8 +255,10 @@ atom-panel.modal .breakpoint-settings-view .setting-new atom-text-editor[mini] {
   transition:transform .08s;
 }
 
+.tabs-wrapper {
+  height:100%;
+}
 .tabs-view {
-
     display: flex;
     height: 100%;
     padding-bottom: 75px;
@@ -253,6 +275,12 @@ atom-panel.modal .breakpoint-settings-view .setting-new atom-text-editor[mini] {
 }
 .tabs-view:nth-child(3) {
   order: 3;
+}
+
+.php-debug-collapsable[data-expanded="false"] {
+  .php-debug-collapsable-body {
+    display:none;
+  }
 }
 
 .php-debug-watchpoints .watch-item {

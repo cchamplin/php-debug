@@ -144,23 +144,23 @@ class DbgpInstance extends DebugContext
       commands.push @executeBreakpoint(breakpoint)
 
     if atom.config.get('php-debug.PhpException.FatalError')
-      commands.push @executeBreakpoint(new Breakpoint(type: Breakpoint.TYPE_EXCEPTION, exception: 'Fatal error', stackdepth: -1))
+      commands.push @executeBreakpoint(new Breakpoint({type: Breakpoint.TYPE_EXCEPTION, exception: 'Fatal error', stackDepth: -1}))
     if atom.config.get('php-debug.PhpException.CatchableFatalError')
-      commands.push @executeBreakpoint(new Breakpoint(type: Breakpoint.TYPE_EXCEPTION, exception: 'Catchable fatal error', stackdepth: -1))
+      commands.push @executeBreakpoint(new Breakpoint({type: Breakpoint.TYPE_EXCEPTION, exception: 'Catchable fatal error', stackDepth: -1}))
     if atom.config.get('php-debug.PhpException.Warning')
-      commands.push @executeBreakpoint(new Breakpoint(type: Breakpoint.TYPE_EXCEPTION, exception: 'Warning', stackdepth: -1))
+      commands.push @executeBreakpoint(new Breakpoint({type: Breakpoint.TYPE_EXCEPTION, exception: 'Warning', stackDepth: -1}))
     if atom.config.get('php-debug.PhpException.StrictStandards')
-      commands.push @executeBreakpoint(new Breakpoint(type: Breakpoint.TYPE_EXCEPTION, exception: 'Strict standards', stackdepth: -1))
+      commands.push @executeBreakpoint(new Breakpoint({type: Breakpoint.TYPE_EXCEPTION, exception: 'Strict standards', stackDepth: -1}))
     if atom.config.get('php-debug.PhpException.Xdebug')
-      commands.push @executeBreakpoint(new Breakpoint(type: Breakpoint.TYPE_EXCEPTION, exception: 'Xdebug', stackdepth: -1))
+      commands.push @executeBreakpoint(new Breakpoint({type: Breakpoint.TYPE_EXCEPTION, exception: 'Xdebug', stackDepth: -1}))
     if atom.config.get('php-debug.PhpException.UnknownError')
-      commands.push @executeBreakpoint(new Breakpoint(type: Breakpoint.TYPE_EXCEPTION, exception: 'Unknown error', stackdepth: -1))
+      commands.push @executeBreakpoint(new Breakpoint({type: Breakpoint.TYPE_EXCEPTION, exception: 'Unknown error', stackDepth: -1}))
     if atom.config.get('php-debug.PhpException.Notice')
-      commands.push @executeBreakpoint(new Breakpoint(type: Breakpoint.TYPE_EXCEPTION, exception: 'Notice', stackdepth: -1))
+      commands.push @executeBreakpoint(new Breakpoint({type: Breakpoint.TYPE_EXCEPTION, exception: 'Notice', stackDepth: -1}))
 
     for exception in atom.config.get('php-debug.CustomExceptions')
       console.log exception
-      commands.push @executeBreakpoint(new Breakpoint(type: Breakpoint.TYPE_EXCEPTION, exception: exception, stackdepth: -1))
+      commands.push @executeBreakpoint(new Breakpoint({type: Breakpoint.TYPE_EXCEPTION, exception: exception, stackDepth: -1}))
 
     return Q.all(commands)
 
@@ -243,7 +243,7 @@ class DbgpInstance extends DebugContext
               if (message._)
                 @GlobalContext.notifyConsoleMessage(message._)
               type = "error"
-            breakpoint = new Breakpoint(filepath: filepath, line:lineno, type: type)
+            breakpoint = new Breakpoint(filePath: filepath, line:lineno, type: type)
             @GlobalContext.notifyBreak(breakpoint)
           when 'stopping'
             @executeStop()

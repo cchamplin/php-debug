@@ -10,8 +10,10 @@ BreakpointMarker    = require './models/breakpoint-marker'
 Watchpoint    = require './models/watchpoint'
 GlobalContext = require './models/global-context'
 helpers        = require './helpers'
+PHPDebugEngine    = require './engines/dbgp/engine'
 PhpDebugDebugView = require './status/php-debug-debug-view'
 PhpDebugConsoleStatusView = require './status/php-debug-console-status-view'
+OverlayBar = require './actions/overlay-bar'
 
 PhpDebugContextUri = "phpdebug://context"
 PhpDebugConsoleUri = "phpdebug://console"
@@ -45,6 +47,11 @@ module.exports = PhpDebug =
   subscriptions: null
 
   config:
+    EnableActionBar:
+      title: "Enable Action Bar"
+      type: 'boolean'
+      default: true
+      description: "Enable an overlay action bar for debugging"
     EnableStatusbarButtons:
       title: "Enable buttons on status bar"
       type: 'boolean'
@@ -142,10 +149,15 @@ module.exports = PhpDebug =
 
   activate: (state) ->
     if state
+      console.log('deserializing activate')
+      console.log(state)
       @GlobalContext = atom.deserializers.deserialize(state)
+      console.log(@GlobalContext)
 
     if !@GlobalContext
       @GlobalContext = new GlobalContext()
+
+    @GlobalContext.addDebugEngine(new PHPDebugEngine())
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
@@ -187,6 +199,14 @@ module.exports = PhpDebug =
     @GlobalContext.onSessionEnd () =>
       if @currentCodePointDecoration
         @currentCodePointDecoration.destroy?()
+      if @overlayActionBar
+        @overlayActionBar.destroy?()
+        @overlayActionBar = null
+
+    @GlobalContext.onSessionStart () =>
+      if !@overlayActionBar
+        @overlayActionBar = new OverlayBar({context:@GlobalContext})
+        @overlayActionBar.attach()
 
     @GlobalContext.onRunning () =>
       if @currentCodePointDecoration
@@ -265,8 +285,8 @@ module.exports = PhpDebug =
   consumeStatusBar: (statusBar) ->
     atom.config.observe "php-debug.EnableStatusbarButtons", (enable) =>
       if enable
-        @debugView = new PhpDebugDebugView(statusBar, this)
-        @consoleStatusView = new PhpDebugConsoleStatusView(statusBar, this)
+        @debugView = new PhpDebugDebugView({statusBar:statusBar, phpDebug:this})
+        @consoleStatusView = new PhpDebugConsoleStatusView({statusBar:statusBar, phpDebug:this})
       else
         @consoleStatusView?.destroy?()
         @consoleStatusView = null
@@ -292,6 +312,8 @@ module.exports = PhpDebug =
     @GlobalContext.serialize()
 
   deactivate: ->
+    @overlayActionBar?.destroy?()
+    @overlayActionBar = null
     @debugView?.destroy?()
     @debugView = null
     @consoleStatusView?.destroy?()
@@ -525,7 +547,7 @@ module.exports = PhpDebug =
       line = range.getRows()[0]+1
     return if !editor || !editor.getPath
     path = editor.getPath()
-    breakpoint = new Breakpoint({filepath:path, line:line})
+    breakpoint = new Breakpoint({filePath:path, line:line})
     removed = @GlobalContext.removeBreakpoint breakpoint
     if removed
       if removed.getMarker()
