@@ -35,10 +35,6 @@
   background-color: fade(@background-color-error,15%) !important;
 }
 
-.php-debug {
-  overflow: auto;
-}
-
 .php-debug-console {
   padding-top: 10px;
 }
@@ -46,7 +42,9 @@
   margin: 0 10px 10px 10px;
 }
 .php-debug-unified-view {
-
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .php-debug-debug-view-toggle,
