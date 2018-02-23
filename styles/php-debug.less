@@ -101,26 +101,25 @@
   .tabs-view {
 
   }
+  .breakpoint-item {
+    cursor: pointer;
+  }
   .breakpoint-line {
     margin-left: 5px;
   }
-  .stack-frame-label
-  {
-
-  }
-  .stack-frame-filepath
-  {
-
-  }
-
   ul {
     padding-left: 15px;
   }
-  
   li {
     list-style-type: none;
   }
-  
+  .stack-frame-label {
+
+  }
+  .stack-frame-filepath {}  
+  .php-debug-stack-item {
+    cursor: pointer;
+  }
   .php-debug-list {
     padding-left: 0;
   }
@@ -133,6 +132,7 @@
 .php-debug-collapsable-body {
   overflow: auto;
 }
+
 .php-debug-console {
   .php-debug-console-view-container {
     height:100%;
@@ -217,7 +217,7 @@ atom-panel.modal .breakpoint-settings-view .setting-new atom-text-editor[mini] {
 .panel-heading .close-icon,
 .php-debug-watchpoints .close-icon {
   position: absolute;
-  cursor: default;
+  cursor: pointer;
   top: -10px;
   right: -10px;
   z-index: 2;
